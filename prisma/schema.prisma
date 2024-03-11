@@ -128,7 +128,7 @@ model Paciente {
   fechaNacimiento DateTime? @map(name: "fecha_nacimiento")
   sexo            String?   @map(name: "sexo")
   estadoCivil     String?   @map(name: "estado_civil")
-  estado          String    @default("activo") @map(name: "estado")
+  estado          String?   @default("activo") @map(name: "estado")
   deletedAt       DateTime? @map(name: "eliminado_en")
   deleted         Boolean?  @default(false) @map(name: "eliminado")
 
