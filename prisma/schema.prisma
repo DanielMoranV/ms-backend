@@ -1,0 +1,157 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Colaboradores 
+model Colaborador {
+  colaboradorId   Int       @id @default(autoincrement()) @map(name: "colaborador_id")
+  tipoDocumento   String    @map(name: "tipo_documento")
+  dni             String    @unique @map(name: "dni")
+  nombre          String    @map(name: "nombre")
+  apellidos       String    @map(name: "apellidos")
+  cargoId         Int       @map(name: "cargo_id")
+  telefono        String?   @map(name: "telefono")
+  direccion       String?   @map(name: "direccion")
+  email           String?   @map(name: "email")
+  foto            String?   @map(name: "foto")
+  fechaNacimiento DateTime? @map(name: "fecha_nacimiento")
+  sexo            String?   @map(name: "sexo")
+  estadoCivil     String?   @map(name: "estado_civil")
+
+  cargoEmpresa      CargoEmpresa        @relation(fields: [cargoId], references: [cargoId])
+  AccesoColaborador AccesoColaborador[]
+
+  @@map(name: "colaborador")
+}
+
+model AreaEmpresa {
+  areaId       Int            @id @default(autoincrement()) @map(name: "area_id")
+  nombre       String         @unique @map(name: "nombre")
+  cargoEmpresa CargoEmpresa[]
+
+  @@map(name: "area_empresa")
+}
+
+model CargoEmpresa {
+  cargoId     Int           @id @default(autoincrement()) @map(name: "cargo_id")
+  nombre      String        @unique @map(name: "nombre")
+  areaId      Int           @map(name: "areaId")
+  areaEmpresa AreaEmpresa   @relation(fields: [areaId], references: [areaId])
+  Colaborador Colaborador[]
+
+  @@map(name: "cargo_empresa")
+}
+
+model AccesoColaborador {
+  accessId      Int       @id @default(autoincrement()) @map(name: "acceso_colaborador_id")
+  username      String    @unique @map(name: "username")
+  password      String    @map(name: "password")
+  status        String?   @map(name: "status")
+  active        Boolean?  @default(true) @map("active")
+  lastSession   DateTime? @map(name: "last_session")
+  createAt      DateTime? @map(name: "create_at")
+  colaboradorId Int       @map(name: "colaborador_id")
+  rolId         Int       @map(name: "rol_id")
+
+  colaborador Colaborador @relation(fields: [colaboradorId], references: [colaboradorId])
+  role        Rol         @relation(fields: [rolId], references: [rolId])
+
+  @@map(name: "acceso_colaborador")
+}
+
+model Rol {
+  rolId         Int                 @id @default(autoincrement()) @map(name: "rol_id")
+  nombre        String              @unique @map(name: "name")
+  estado        Boolean             @default(true) @map(name: "estado")
+  colaborador   AccesoColaborador[]
+  RolPorModulos RolPorModulo[]
+
+  @@map(name: "rol")
+}
+
+// Grupos y modulos del sistema
+model GrupoModulos {
+  grupoId Int      @id @default(autoincrement()) @map(name: "grupo_id")
+  nombre  String   @unique @map(name: "nombre")
+  estado  Boolean  @default(true) @map(name: "estado")
+  icono   String   @map(name: "icono")
+  modulos Modulo[]
+
+  @@map(name: "grupos_modulos")
+}
+
+model Modulo {
+  moduloId        Int            @id @default(autoincrement()) @map(name: "modulo_id")
+  nombre          String         @unique @map(name: "nombre")
+  estado          Boolean        @default(true) @map(name: "estado")
+  icono           String         @map(name: "icono")
+  gruposId        Int?           @map(name: "grupos_id")
+  Grupos          GrupoModulos?  @relation(fields: [gruposId], references: [grupoId])
+  RolesPorModulos RolPorModulo[]
+
+  @@map(name: "modulo")
+}
+
+model RolPorModulo {
+  rolId    Int @map(name: "rol_id")
+  moduloId Int @map(name: "grupo_id")
+
+  rol    Rol    @relation(fields: [rolId], references: [rolId])
+  modulo Modulo @relation(fields: [moduloId], references: [moduloId])
+
+  @@id([rolId, moduloId])
+  @@map(name: "rol_por_modulo")
+}
+
+// Pacientes
+model Paciente {
+  pacienteId      Int       @id @default(autoincrement()) @map(name: "paciente_id")
+  tipoDocumento   String    @map(name: "tipo_documento")
+  dni             String    @unique @map(name: "dni")
+  nombre          String    @map(name: "nombre")
+  apellidos       String    @map(name: "apellidos")
+  telefono        String?   @map(name: "telefono")
+  direccion       String?   @map(name: "direccion")
+  email           String?   @map(name: "email")
+  foto            String?   @map(name: "foto")
+  fechaNacimiento DateTime? @map(name: "fecha_nacimiento")
+  sexo            String?   @map(name: "sexo")
+  estadoCivil     String?   @map(name: "estado_civil")
+  estado          String    @default("activo") @map(name: "estado")
+  deletedAt       DateTime? @map(name: "eliminado_en")
+  deleted         Boolean?  @default(false) @map(name: "eliminado")
+
+  dependientes Dependiente[]
+
+  @@map(name: "paciente")
+}
+
+model Dependiente {
+  dependienteId   Int       @id @default(autoincrement()) @map(name: "dependiente_id")
+  tipoDocumento   String    @map(name: "tipo_documento")
+  dni             String    @unique @map(name: "dni")
+  nombre          String    @map(name: "nombre")
+  apellidos       String    @map(name: "apellidos")
+  telefono        String?   @map(name: "telefono")
+  direccion       String?   @map(name: "direccion")
+  email           String?   @map(name: "email")
+  foto            String?   @map(name: "foto")
+  fechaNacimiento DateTime? @map(name: "fecha_nacimiento")
+  sexo            String?   @map(name: "sexo")
+  estadoCivil     String?   @map(name: "estado_civil")
+  pacienteId      Int       @map(name: "paciente_id")
+  paciente        Paciente  @relation(fields: [pacienteId], references: [pacienteId])
+
+  @@map(name: "dependiente")
+}
