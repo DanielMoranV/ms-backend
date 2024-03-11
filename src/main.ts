@@ -1,5 +1,5 @@
-import { ValidationPipe } from '@nestjs/common';
-import { HttpAdapterHost, NestFactory } from '@nestjs/core';
+import { ClassSerializerInterceptor, ValidationPipe } from '@nestjs/common';
+import { HttpAdapterHost, NestFactory, Reflector } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { PrismaClientExceptionFilter } from 'nestjs-prisma';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -19,7 +19,7 @@ async function bootstrap() {
       transform: true,
     }),
   );
-
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
   const config = new DocumentBuilder()
     .setTitle('API REST Medical System')
     .setDescription('The MS API description')

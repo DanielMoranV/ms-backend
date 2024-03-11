@@ -54,11 +54,11 @@ model CargoEmpresa {
 }
 
 model AccesoColaborador {
-  accessId      Int       @id @default(autoincrement()) @map(name: "acceso_colaborador_id")
+  accesoId      Int       @id @default(autoincrement()) @map(name: "acceso_colaborador_id")
   username      String    @unique @map(name: "username")
   password      String    @map(name: "password")
-  status        String?   @map(name: "status")
-  active        Boolean?  @default(true) @map("active")
+  estado        String?   @map(name: "estado")
+  activo        Boolean?  @default(true) @map("activo")
   lastSession   DateTime? @map(name: "last_session")
   createAt      DateTime? @map(name: "create_at")
   colaboradorId Int       @map(name: "colaborador_id")
@@ -132,7 +132,8 @@ model Paciente {
   deletedAt       DateTime? @map(name: "eliminado_en")
   deleted         Boolean?  @default(false) @map(name: "eliminado")
 
-  dependientes Dependiente[]
+  dependientes   Dependiente[]
+  AccesoPaciente AccesoPaciente?
 
   @@map(name: "paciente")
 }
@@ -154,4 +155,19 @@ model Dependiente {
   paciente        Paciente  @relation(fields: [pacienteId], references: [pacienteId])
 
   @@map(name: "dependiente")
+}
+
+model AccesoPaciente {
+  accesoId    Int       @id @default(autoincrement()) @map(name: "acceso_colaborador_id")
+  username    String    @unique @map(name: "username")
+  password    String    @map(name: "password")
+  estado      String?   @default("offline") @map(name: "estado")
+  active      Boolean?  @default(true) @map("activo")
+  lastSession DateTime? @map(name: "last_session")
+  createAt    DateTime? @map(name: "create_at")
+  pacienteId  Int       @unique @map(name: "paciente_id")
+
+  paciente Paciente @relation(fields: [pacienteId], references: [pacienteId])
+
+  @@map(name: "acceso_paciente")
 }
