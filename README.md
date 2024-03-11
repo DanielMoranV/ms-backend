@@ -83,15 +83,19 @@ endOfLine: 'auto',
 
 ## Instalar dependencias
 
-npm i class-validator class-transformer
-npm install --save @nestjs/swagger swagger-ui-express
+```bash
+$ npm i class-validator class-transformer
+$ npm install --save @nestjs/swagger swagger-ui-express
+```
 
 ## Instalar Prisma
 
-npm install -D prisma
-npx prisma init
-npx prisma migrate dev --name "init"
-touch prisma/seed.ts
+```bash
+$ npm install -D prisma
+$ npx prisma init
+$ npx prisma migrate dev --name "init"
+$ touch prisma/seed.ts
+```
 
 ## Añadir script de datos semilla
 
@@ -99,4 +103,6 @@ touch prisma/seed.ts
 "seed": "ts-node prisma/seed.ts"
 }
 
-npx prisma db seed
+```bash
+$ npx prisma db seed
+```
